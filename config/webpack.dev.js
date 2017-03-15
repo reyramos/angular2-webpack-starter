@@ -88,7 +88,12 @@ module.exports = function (options) {
       library: 'ac_[name]',
       libraryTarget: 'var',
     },
-
+    stats: {
+      colors: true,
+      modules: true,
+      reasons: true,
+      errorDetails: true
+    },
     module: {
 
       rules: [
@@ -129,7 +134,7 @@ module.exports = function (options) {
           test: /\.scss$/,
           use: ['style-loader', 'css-loader', 'sass-loader'],
           include: [helpers.root('src', 'styles')]
-        },
+        }
 
       ]
 

@@ -177,7 +177,7 @@ module.exports = function (options) {
          */
         {
           test: /\.html$/,
-          use: ['raw-loader', 'html-minify-loader'],
+          use: ['raw-loader'],
           exclude: [helpers.root('src/index.html')]
         },
 
