@@ -92,18 +92,18 @@ module.exports = function (options) {
     module: {
 
       rules: [
-       {
-         test: /\.ts$/,
-         use: [
-           {
-             loader: 'tslint-loader',
-             options: {
-               configFile: 'tslint.json'
-             }
-           }
-         ],
-         exclude: [/\.(spec|e2e)\.ts$/]
-       },
+        {
+          test: /\.ts$/,
+          use: [
+            {
+              loader: 'tslint-loader',
+              options: {
+                configFile: 'tslint.json'
+              }
+            }
+          ],
+          exclude: [/\.(spec|e2e)\.ts$/]
+        },
 
         /*
          * css loader support for *.css files (styles directory only)
@@ -115,7 +115,11 @@ module.exports = function (options) {
           use: ['style-loader', 'css-loader'],
           include: [helpers.root('src', 'styles')]
         },
-
+        {
+          test: /\.less$/,
+          use: ['style-loader', 'css-loader', 'less-loader'],
+          exclude: [helpers.root('src', 'styles')]
+        },
         /*
          * sass loader support for *.scss files (styles directory only)
          * Loads external sass styles into the DOM, supports HMR
@@ -194,8 +198,8 @@ module.exports = function (options) {
        * See: https://github.com/SimenB/add-asset-html-webpack-plugin
        */
       new AddAssetHtmlPlugin([
-        { filepath: helpers.root(`dll/${DllBundlesPlugin.resolveFile('polyfills')}`) },
-        { filepath: helpers.root(`dll/${DllBundlesPlugin.resolveFile('vendor')}`) }
+        {filepath: helpers.root(`dll/${DllBundlesPlugin.resolveFile('polyfills')}`)},
+        {filepath: helpers.root(`dll/${DllBundlesPlugin.resolveFile('vendor')}`)}
       ]),
 
       /**
@@ -213,9 +217,7 @@ module.exports = function (options) {
        */
       new LoaderOptionsPlugin({
         debug: true,
-        options: {
-
-        }
+        options: {}
       }),
 
     ],

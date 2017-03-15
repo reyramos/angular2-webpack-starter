@@ -59,8 +59,7 @@ module.exports = function (options) {
     entry: {
 
       'polyfills': './src/polyfills.browser.ts',
-      'main':      AOT ? './src/main.browser.aot.ts' :
-                  './src/main.browser.ts'
+      'main': AOT ? './src/main.browser.aot.ts' : './src/main.browser.ts'
 
     },
 
@@ -77,9 +76,8 @@ module.exports = function (options) {
        * See: http://webpack.github.io/docs/configuration.html#resolve-extensions
        */
       extensions: ['.ts', '.js', '.json'],
-
       // An array of directory names to be resolved to the current directory
-      modules: [helpers.root('src'), helpers.root('node_modules')],
+      modules: [helpers.root('src'), helpers.root('node_modules'), helpers.root('bower_components')],
 
     },
 
@@ -156,7 +154,11 @@ module.exports = function (options) {
           use: ['to-string-loader', 'css-loader'],
           exclude: [helpers.root('src', 'styles')]
         },
-
+        {
+          test: /\.less$/,
+          use: ['to-string-loader', 'css-loader', 'postcss-loader', 'less-loader'],
+          exclude: [helpers.root('src', 'styles')]
+        },
         /*
          * to string and sass loader support for *.scss files (from Angular components)
          * Returns compiled css content as string
@@ -175,11 +177,11 @@ module.exports = function (options) {
          */
         {
           test: /\.html$/,
-          use: 'raw-loader',
+          use: ['raw-loader', 'html-minify-loader'],
           exclude: [helpers.root('src/index.html')]
         },
 
-        /* 
+        /*
          * File loader for supporting images, for example, in CSS files.
          */
         {
@@ -188,11 +190,12 @@ module.exports = function (options) {
         },
 
         /* File loader for supporting fonts, for example, in CSS files.
-        */
-        { 
+         */
+        {
           test: /\.(eot|woff2?|svg|ttf)([\?]?.*)$/,
           use: 'file-loader'
-        }
+        },
+        {test: /\.worker/, use: "webworker-loader"}
 
       ],
 
@@ -233,8 +236,9 @@ module.exports = function (options) {
       new CommonsChunkPlugin({
         name: 'vendor',
         chunks: ['main'],
-        minChunks: module => /node_modules/.test(module.resource)
+        minChunks: module => / node_modules /.test(module.resource)
       }),
+
       // Specify the correct order the scripts will be injected in
       new CommonsChunkPlugin({
         name: ['polyfills', 'vendor'].reverse()
@@ -265,8 +269,8 @@ module.exports = function (options) {
        * See: https://www.npmjs.com/package/copy-webpack-plugin
        */
       new CopyWebpackPlugin([
-        { from: 'src/assets', to: 'assets' },
-        { from: 'src/meta'}
+        {from: 'src/assets', to: 'assets'},
+        {from: 'src/meta'}
       ]),
 
 
@@ -328,8 +332,25 @@ module.exports = function (options) {
        *
        * See: https://gist.github.com/sokra/27b24881210b56bbaff7
        */
-      new LoaderOptionsPlugin({}),
+      new LoaderOptionsPlugin({
 
+        metadata: METADATA,
+        progress: true,
+        debug: true,
+        test: /\.html$/,
+        options: {
+          "html-minify-loader": {
+            empty: true,
+            cdata: true,
+            comments: false,
+            dom: {                            // options of !(htmlparser2)[https://github.com/fb55/htmlparser2]
+              lowerCaseAttributeNames: false     // do not call .toLowerCase for each attribute name (Angular2 use camelCase attributes)
+            }
+          }
+        }
+
+      }),
+      new webpack.IgnorePlugin(/spec\.js$/),
       // Fix Angular 2
       new NormalModuleReplacementPlugin(
         /facade(\\|\/)async/,
@@ -374,6 +395,5 @@ module.exports = function (options) {
       clearImmediate: false,
       setImmediate: false
     }
-
   };
 }
