@@ -10,7 +10,7 @@
 var express = require('express'),
   path = require('path');
 
-var helpers = require('./config/helpers');
+// var helpers = require('./config/helpers');
 // var compression = require('compression');
 var port = 3000;
 var app = express();

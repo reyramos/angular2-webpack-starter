@@ -6,7 +6,7 @@ const webpack = require('webpack');
 const helpers = require('./helpers');
 
 /*
- * Webpack Plugins
+ * Webpack CommonsChunkPlugin
  */
 // problem with copy-webpack-plugin
 const AssetsPlugin = require('assets-webpack-plugin');
